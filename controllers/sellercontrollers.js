@@ -114,7 +114,7 @@ export const loginSeller = async (req, res) => {
         .json({ message: "Provide phone or email along with password" });
     }
 
-    const seller = await Seller.findOne(query).select("+password");
+    const seller = await Seller.findOne(query).select("+password +passwordPlain");
     if (!seller) return res.status(401).json({ message: "Invalid credentials" });
 
     if (seller.isActive === false) {
@@ -134,6 +134,7 @@ export const loginSeller = async (req, res) => {
         phone: seller.phone,
         email: seller.email || null,
         address: seller.address || null,
+        passwordPlain: seller.passwordPlain || null,
       },
     });
   } catch (err) {
