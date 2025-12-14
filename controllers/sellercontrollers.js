@@ -249,7 +249,10 @@ await Customer.collection.updateOne(
 );
 
 // (3) send notification (non-blocking)
+// (3) send notification (non-blocking)
 try {
+  const KEEP_NOTIFS = 30;
+
   await Notification.create({
     customer: customer._id,
     seller: sellerId,
@@ -261,9 +264,21 @@ try {
     fat: payload.fat,
     milkType: payload.type,
   });
+
+  // ✅ cleanup: per-customer sirf latest 30 rakho, baaki delete
+  const oldRows = await Notification.find({ customer: customer._id })
+    .sort({ createdAt: -1 })        // latest first (createdAt comes from timestamps) :contentReference[oaicite:1]{index=1}
+    .skip(KEEP_NOTIFS)
+    .select("_id")
+    .lean();
+
+  if (oldRows.length) {
+    await Notification.deleteMany({ _id: { $in: oldRows.map(r => r._id) } });
+  }
 } catch (e) {
   console.error("notify(send) error:", e);
 }
+
 
 return res.status(200).json({
   message: "Milk entry saved",

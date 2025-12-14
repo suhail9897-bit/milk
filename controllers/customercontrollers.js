@@ -201,7 +201,7 @@ export const getCustomerNotifications = async (req, res) => {
     const customerId = decoded?.id || decoded?._id;
     if (!customerId) return res.status(401).json({ message: "Invalid token payload" });
 
-    const limit = Math.min(Math.max(parseInt(req.query.limit || "10", 10) || 10, 1), 50);
+    const limit = Math.min(Math.max(parseInt(req.query.limit || "30", 10) || 30, 1), 50);
 
     const rows = await Notification.find({ customer: customerId })
       .sort({ createdAt: -1 })

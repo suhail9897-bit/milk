@@ -24,4 +24,6 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true, collection: "notifications" }
 );
 
+notificationSchema.index({ customer: 1, createdAt: -1 });
+
 export default mongoose.model("Notification", notificationSchema);
